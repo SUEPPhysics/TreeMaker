@@ -22,7 +22,7 @@ era_year_dict = {
     "Fall17"        : "2017",
     "Summer16v3"    : "2016",
     "Autumn18"      : "2018",
-    "SVJ"           : "unknown",
+    "SUEP"          : "unknown",
 }
 
 def main(args):
@@ -32,7 +32,7 @@ def main(args):
                                      epilog='Example usage:\n\tpython produce_eff_lumi.py -t',
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-c",   "--categories",     dest="categories",  default=[], nargs="+",  choices=meta_dict.keys(),                           help="List of categories to make dicts for rather than making all of the files (default = %(default)s)")
-    parser.add_argument("-e",   "--eras",           dest="eras",        default=["Summer16","Fall17","Summer16v3","Autumn18","SVJ"],    nargs="+",  help="List of eras for which to produce a table (default = %(default)s)")
+    parser.add_argument("-e",   "--eras",           dest="eras",        default=["Summer16","Fall17","Summer16v3","Autumn18","SUEP"],    nargs="+",  help="List of eras for which to produce a table (default = %(default)s)")
     parser.add_argument("-f",   "--filename",       dest="filename",    default="eff_lumi",                                                         help="The output filename without the extension (default = %(default)s)")
     parser.add_argument("-F",   "--filter",         dest="filter",      action="store_true",                                                        help="Filter out the duplicate entries based on sample name (default = %(default)s)")
     parser.add_argument("-o",   "--output_folder",  dest="ofolder",     default="./",                                                               help="Put the output files in the specified folder (default = %(default)s)")
@@ -42,7 +42,9 @@ def main(args):
     # dict of modules
     era_list_dict = {}
     for era in args.eras:
-        module_name = "SVJsamples" if era=="SVJ" else "MCSamples_"+era
+        if era=="SUEP" :  module_name = "SUEPsamples"
+        elif era=="SVJ" :  module_name = "SVJsamples"
+        else : module_name="MCSamples_"+era
         var = era+"samples"
         mod = importlib.import_module(module_name)
         era_list_dict[era] = getattr(mod, var)

@@ -36,15 +36,16 @@ class maker:
         self.getParamDefault("treename","PreSelection")
         
         # background estimations on by default
-        self.getParamDefault("lostlepton", True)
+        # background estimations OFF 
+        self.getParamDefault("lostlepton", False)
         self.getParamDefault("hadtau", False)
         self.getParamDefault("hadtaurecluster", 0)
-        self.getParamDefault("doZinv", True)
+        self.getParamDefault("doZinv", False)
 
         # special signal stuff
-        self.getParamDefault("systematics",True);
-        self.getParamDefault("semivisible",True);
-        self.getParamDefault("emerging",False);
+        self.getParamDefault("systematics",False);
+        self.getParamDefault("semivisible",False);
+        self.getParamDefault("emerging",True);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
         

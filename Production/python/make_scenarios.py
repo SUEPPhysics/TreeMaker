@@ -25,7 +25,7 @@ for mMed in mMeds:
         sample="mMed-{}_mDark-{}_temp-{}_decay-{}_13TeV-pythia8".format(mMed,mDark,temp,decay)
         bash_command="eosls {}*{}*".format(path,sample,sample)
         fin  = "Autumn18sig/{}.txt".format(sample)
-        fout = "Autumn18sig/{}.py".format(sample)
+        fout = "Autumn18sig/{}_cff.py".format(sample)
     
         pfile = open(fout,"w")
         pfile.write("import FWCore.ParameterSet.Config as cms\n\n")
@@ -35,15 +35,11 @@ for mMed in mMeds:
         pfile.write("source = cms.Source (\"PoolSource\",fileNames = readFiles, secondaryFileNames = secFiles)\n")
         pfile.write("readFiles.extend( [\n")
 
+        #print(bash_command +" > Autumn18sig/{}.txt".format(sample))
         
         for line in open(fin,"r").readlines():
             f = path+line.strip()
             pfile.write("       '"+f+"',\n")
-        #print(bash_command +" > Autumn18sig/{}.txt".format(sample))
-
-        #for line in output:
-        #for line in output[0]:
-        #for output in process.stdout.readlines():
 
 
         pfile.write("] )\n")
