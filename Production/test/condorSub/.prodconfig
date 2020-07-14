@@ -1,6 +1,8 @@
 [manage]
-dir = .
+dir = .  
 [submit]
-input = 2017B,2017C,2017D,2017E,2017F
+input = Autumn18_qcd
+#input = 2018D_part2 # crashing 
+#input = Autumn18_suep 
 [caches]
 $CMSSW_BASE/test = 1
