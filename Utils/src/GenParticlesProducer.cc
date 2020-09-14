@@ -52,6 +52,7 @@ private:
     edm::InputTag genCollection;
     edm::EDGetTokenT<edm::View<reco::GenParticle>> genCollectionTok;
     bool        debug;
+    bool        keepEverything;
     std::unordered_set<int> typicalChildIds, typicalParentIds, keepAllTheseIds;
     bool        keepFirstDecayProducts;
     bool        keepMinimal;
@@ -81,6 +82,8 @@ boson_status_codes{22,51,52,62}
     keepFirstDecayProducts = iConfig.getParameter<bool>("keepFirst");
 
     keepMinimal = iConfig.getParameter<bool>("keepMinimal");
+
+    keepEverything = iConfig.getParameter<bool>("keepEverything");
 
     produces< std::vector< TLorentzVector > >(""); 
     produces< std::vector< int > >("PdgId");
@@ -349,13 +352,13 @@ void GenParticlesProducer::storeStandard(const edm::Handle< edm::View<reco::GenP
 
         bool typicalChild=(typicalChildIds.find(abs(iPart.pdgId()))!=typicalChildIds.end());
         bool typicalParent=(typicalParentIds.find(abs(iPart.pdgId()))!=typicalParentIds.end());
-        if (!(typicalChild || typicalParent || keepAllThese || firstDecayProducts)) continue;
+        if (!(keepEverything || typicalChild || typicalParent || keepAllThese || firstDecayProducts)) continue;
 
         int status = abs(iPart.status());
         bool acceptableParent = typicalParent && (iPart.isLastCopy() || status==21);
         //bool acceptableChild = typicalChild && (status==1 || status==2 || (status>20 && status<30));
         bool acceptableChild = typicalChild && iPart.isLastCopy();
-        if (!(acceptableChild || acceptableParent || keepAllThese || firstDecayProducts)) continue;
+        if (!(keepEverything || acceptableChild || acceptableParent || keepAllThese || firstDecayProducts)) continue;
 
         TLorentzVector temp;
         temp.SetPxPyPzE(iPart.px(), iPart.py(), iPart.pz(), iPart.energy());

@@ -165,6 +165,7 @@ def makeTreeFromMiniAOD(self,process):
             process.genParticles = cms.EDProducer("GenParticlesProducer",
                 genCollection = cms.InputTag("prunedGenParticles"),
                 debug = cms.bool(False),
+                keepEverything = cms.bool(True),
                 childIds = cms.vint32(1,2,3,4,5,11,12,13,14,15,16,22),
                 parentIds = cms.vint32(
                     1,2,6,23,24,25,

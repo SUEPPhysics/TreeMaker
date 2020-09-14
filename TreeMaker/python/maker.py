@@ -57,7 +57,7 @@ class maker:
         self.getParamDefault("debugtap", False)
         self.getParamDefault("debugsubjets", False)
         self.getParamDefault("applybaseline", False)
-        self.getParamDefault("saveMinimalGenParticles", True)
+        self.getParamDefault("saveMinimalGenParticles", False)
         self.getParamDefault("saveGenTops", False)
         self.getParamDefault("doMT2",False)
         self.getParamDefault("nestedVectors", True)
