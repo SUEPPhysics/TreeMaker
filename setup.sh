@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
 CMSSWVER=CMSSW_10_2_21
-FORK=TreeMaker
-BRANCH=Run2_2017
-ACCESS=ssh
+FORK=SUEPPhysics
+BRANCH=Run2_suep
+ACCESS=https
 CORES=8
 NAME=""
 DIR="${PWD}"
