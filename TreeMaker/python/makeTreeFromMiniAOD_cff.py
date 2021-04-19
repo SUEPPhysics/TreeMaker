@@ -11,7 +11,7 @@ def makeTreeFromMiniAOD(self,process):
     ## Preamble
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
-    
+
     # files to process
     import FWCore.PythonUtilities.LumiList as LumiList
     process.maxEvents = cms.untracked.PSet(
@@ -92,7 +92,7 @@ def makeTreeFromMiniAOD(self,process):
             elif self.fastsim: process.SignalScan.signalType = "SUSY"
             elif "SVJ" in self.sample and "Scan" in self.sample: process.SignalScan.signalType = "SVJ"
             elif self.scan: process.SignalScan.signalType = "SUSY"
-        
+
     ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ def makeTreeFromMiniAOD(self,process):
         process.MadHT = cms.EDProducer('GenHTProducer')
         # called madHT, i.e. MadGraph, to distinguish from GenHT from GenJets
         self.VarsDouble.extend(['MadHT:genHT(madHT)'])
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
     ## ----------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ def makeTreeFromMiniAOD(self,process):
             )
         else:
             process.genParticles = cms.EDProducer("GenParticlesProducer",
-                genCollection = cms.InputTag("prunedGenParticles"),
+                genCollection = cms.InputTag("packedGenParticles"),
                 debug = cms.bool(False),
                 keepEverything = cms.bool(True),
                 childIds = cms.vint32(1,2,3,4,5,11,12,13,14,15,16,22),
@@ -205,7 +205,7 @@ def makeTreeFromMiniAOD(self,process):
         if self.emerging:
             self.VectorInt.append("genParticles:VtxIdx(GenParticles_vertexIdx)")
             self.VectorXYZPoint.append("genParticles:GenVtx(GenVertices)")
-        
+
         if self.saveGenTops:
             # for ttbar pT reweighting
             # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
@@ -244,7 +244,7 @@ def makeTreeFromMiniAOD(self,process):
 
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
     from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
-    
+
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
@@ -274,13 +274,13 @@ def makeTreeFromMiniAOD(self,process):
             )
         )
         process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
-        
+
         levels  = ['L1FastJet','L2Relative','L3Absolute']
         if self.residual: levels.append('L2L3Residual')
-        
+
         from TreeMaker.TreeMaker.TMEras import TMeras
         from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-        
+
         # rerun DeepCSV on AK4 jets for 2016 80X MC
         ak4updates = cms.PSet(discrs = cms.vstring())
         TMeras.TM80X.toModify(ak4updates,
@@ -298,9 +298,9 @@ def makeTreeFromMiniAOD(self,process):
             btagDiscriminators = ak4updates.discrs.value() if len(ak4updates.discrs.value())>0 else ['None'],
             printWarning = bool(self.verbose),
         )
-        
+
         JetTag = cms.InputTag('updatedPatJetsUpdatedJEC' if len(ak4updates.discrs.value())==0 else 'updatedPatJetsTransientCorrectedUpdatedJEC')
-        
+
         # select double b-tagger
         ak8updates = []
         ak8updates.append("pfBoostedDoubleSecondaryVertexAK8BJetTags")
@@ -356,13 +356,13 @@ def makeTreeFromMiniAOD(self,process):
             btagDiscriminators = ak8updates if len(ak8updates)>0 else ['None'],
             printWarning = bool(self.verbose),
         )
-        
+
         # remove pt cut to avoid default values for some jets
         if self.deepAK8:
             process.pfDeepBoostedJetTagInfosAK8UpdatedJEC.min_jet_pt = cms.double(0)
 
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
- 
+
         # update the corrections for the subjets from the AK8 jets
         # the references from the AK8 jets to the subjects will be fixed later on
         updateJetCollection(
@@ -379,7 +379,7 @@ def makeTreeFromMiniAOD(self,process):
         )
 
         SubjetTag = cms.InputTag('updatedPatJetsTransientCorrectedSlimmedJetsAK8PFPuppiSoftDropPackedSubJetsUpdatedJEC')
-       
+
         # update the MET to account for the new JECs
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
         runMetCorAndUncFromMiniAOD(
@@ -419,7 +419,7 @@ def makeTreeFromMiniAOD(self,process):
         dR_ConeSize         = cms.double(0.3),
         dz_CutValue         = cms.double(0.1),
         minPt_PFCandidate   = cms.double(5.0),
-        isoCut              = cms.double(0.2), 
+        isoCut              = cms.double(0.2),
         pdgId               = cms.int32(13),
         mTCut               = cms.double(100.),
         METTag              = METTag,
@@ -456,7 +456,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(PFCands_mT)'])
         self.VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(PFCands_charge)'])
         self.VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(PFCands_id)'])
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
@@ -480,7 +480,7 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
     ## ----------------------------------------------------------------------------------------------
-    
+
     # When the miniAOD file is created, the results of several different
     # MET filters are save in a TriggerResults object for the PAT process
     # Look at /PhysicsTools/PatAlgos/python/slimming/metFilterPaths_cff.py
@@ -488,11 +488,11 @@ def makeTreeFromMiniAOD(self,process):
 
     # The decision was made to include the filter decision flags
     # as individual branches in the tree
-    
+
     if not self.fastsim: # MET filters are not run for fastsim samples
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
-        
+
         process.PrimaryVertexFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -508,7 +508,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_CSCTightHalo2015Filter"),
         )
         self.VarsInt.extend(['CSCTightHaloFilter'])
-        
+
         process.globalTightHalo2016Filter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -516,7 +516,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
         self.VarsInt.extend(['globalTightHalo2016Filter'])
-        
+
         process.globalSuperTightHalo2016Filter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -524,7 +524,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_globalSuperTightHalo2016Filter"),
         )
         self.VarsInt.extend(['globalSuperTightHalo2016Filter'])
-        
+
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -532,7 +532,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_HBHENoiseFilter"),
         )
         self.VarsInt.extend(['HBHENoiseFilter'])
-        
+
         process.HBHEIsoNoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -540,7 +540,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_HBHENoiseIsoFilter"),
         )
         self.VarsInt.extend(['HBHEIsoNoiseFilter'])
-        
+
         process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -548,7 +548,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
         self.VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
-        
+
         process.EcalDeadCellBoundaryEnergyFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -556,7 +556,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_EcalDeadCellBoundaryEnergyFilter"),
         )
         self.VarsInt.extend(['EcalDeadCellBoundaryEnergyFilter'])
-        
+
         process.eeBadScFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
@@ -564,7 +564,7 @@ def makeTreeFromMiniAOD(self,process):
             filterName  =   cms.string("Flag_eeBadScFilter"),
         )
         self.VarsInt.extend(['eeBadScFilter'])
-        
+
         process.ecalBadCalibFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
@@ -615,13 +615,13 @@ def makeTreeFromMiniAOD(self,process):
         process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadChargedCandidateFilter.taggingMode = True
         self.VarsBool.extend(['BadChargedCandidateFilter'])
-        
+
         process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
         process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
         process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadPFMuonFilter.taggingMode = True
         self.VarsBool.extend(['BadPFMuonFilter'])
-        
+
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
     ## ----------------------------------------------------------------------------------------------
@@ -672,11 +672,11 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
         self.VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])
 
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## JER smearing, various uncertainties
     ## ----------------------------------------------------------------------------------------------
-    
+
     # list of clean tags - ignore jet ID for jets matching these objects
     SkipTag = cms.VInputTag(
         cms.InputTag('LeptonsNew:IdIsoMuon'),
@@ -685,7 +685,7 @@ def makeTreeFromMiniAOD(self,process):
         cms.InputTag('IsolatedMuonTracksVeto'),
         cms.InputTag('IsolatedPionTracksVeto'),
     )
-    
+
     # get the JERs (disabled by default)
     # this requires the user to download the .db file from this github
     # https://github.com/cms-jet/JRDatabase
@@ -693,7 +693,7 @@ def makeTreeFromMiniAOD(self,process):
         #get name of JERs without any directories
         JERera = self.jerfile.split('/')[-1]
         JERPatch = cms.string('sqlite_file:'+self.jerfile+'.db')
-    
+
         process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
             connect = JERPatch,
             toGet = cms.VPSet(
@@ -783,7 +783,7 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0,
             storeJer=2, # get central jet smearing factor
         )
-        
+
     ## ----------------------------------------------------------------------------------------------
     ## Jet variables
     ## ----------------------------------------------------------------------------------------------
@@ -807,7 +807,7 @@ def makeTreeFromMiniAOD(self,process):
         )
     )
     process.es_prefer_qg = cms.ESPrefer("PoolDBESSource","qgdb")
-    
+
     # get QG tagging discriminant
     process.QGTagger = cms.EDProducer('QGTagger',
         srcJets             = JetTag,
@@ -816,10 +816,10 @@ def makeTreeFromMiniAOD(self,process):
         srcVertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
         useQualityCuts      = cms.bool(False)
     )
-    
+
     # add userfloats & update tag
     process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2', 'QGTagger:axis1'], ['QGTagger:mult'])
-    
+
     process = self.makeJetVars(process,
         JetTag=JetTag,
         suff='',
@@ -846,7 +846,7 @@ def makeTreeFromMiniAOD(self,process):
     process.QGTaggerSubjets = process.QGTagger.clone(
         srcJets = SubjetTag
     )
-    
+
     # add userfloats & update subjet tag
     process, SubjetTag = addJetInfo(process, SubjetTag,
         ['QGTaggerSubjets:qgLikelihood','QGTaggerSubjets:ptD', 'QGTaggerSubjets:axis2', 'QGTaggerSubjets:axis1'], ['QGTaggerSubjets:mult'])
@@ -862,7 +862,7 @@ def makeTreeFromMiniAOD(self,process):
     )
     TMeras.TM80X.toModify(getattr(process, JetAK8TagSJU.value()), OldName = "SoftDrop")
     JetAK8Tag = JetAK8TagSJU
-    
+
     # apply jet ID and get properties
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8Tag,
@@ -904,9 +904,9 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo:
         # store all genjets
         self.VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
-        
+
         from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
-        
+
         process.GenHTJets = SubGenJetSelection.clone(
             JetTag = cms.InputTag('slimmedGenJets'),
             MinPt  = cms.double(30),
@@ -919,7 +919,7 @@ def makeTreeFromMiniAOD(self,process):
             JetTag = cms.InputTag("GenHTJets"),
         )
         self.VarsDouble.extend(['GenHT'])
-        
+
         process.GenMHTJets = SubGenJetSelection.clone(
             JetTag = cms.InputTag('slimmedGenJets'),
             MinPt  = cms.double(30),
@@ -932,7 +932,7 @@ def makeTreeFromMiniAOD(self,process):
             JetTag  = cms.InputTag('GenMHTJets'),
         )
         self.VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
-    
+
         # substructure for genjets
         from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu
         from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
@@ -1010,7 +1010,7 @@ def makeTreeFromMiniAOD(self,process):
         )
         process.Baseline += process.HTFilter
         #process.Baseline += process.MHTFilter
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## MET
     ## ----------------------------------------------------------------------------------------------
@@ -1035,7 +1035,7 @@ def makeTreeFromMiniAOD(self,process):
                     METTag = METTag
             )
         self.VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)
@@ -1109,7 +1109,7 @@ def makeTreeFromMiniAOD(self,process):
             'primaryVertices:vtxisValid(PrimaryVertices_isValid)',
             'primaryVertices:vtxisFake(PrimaryVertices_isFake)',
             'primaryVertices:vtxisGood(PrimaryVertices_isGood)',
-        ])        
+        ])
         self.VectorInt.extend(['primaryVertices:vtxntracks(PrimaryVertices_nTracks)'])
 
         process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -1178,4 +1178,3 @@ def makeTreeFromMiniAOD(self,process):
     process.WriteTree.associate(process.myTask)
 
     return process
-
